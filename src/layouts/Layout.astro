@@ -1,0 +1,57 @@
+---
+import { GoogleFontsOptimizer } from 'astro-google-fonts-optimizer'
+import { ClientRouter } from 'astro:transitions'
+import '../styles/global.css'
+
+const title = 'Ollama Chat'
+const THEME_NAME = 'app:theme'
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <GoogleFontsOptimizer url="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Sarabun:wght@400;700&display=swap" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
+  </head>
+  <body class="bg-gray-50 dark:bg-slate-800">
+    <slot />
+  </body>
+</html>
+
+<script is:inline define:vars={{ THEME_NAME }}>
+  window.applyTheme = (theme) => {
+    if (typeof document === 'undefined' || typeof localStorage === 'undefined') return
+
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+
+    localStorage.setItem(THEME_NAME, theme)
+  }
+
+  window.getInitialTheme = () => {
+    let initialTheme = 'light'
+    if (typeof window !== 'undefined') {
+      initialTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    if (typeof localStorage !== 'undefined') {
+      initialTheme = localStorage.getItem(THEME_NAME) || initialTheme
+    }
+    return initialTheme
+  }
+
+  window.applyTheme(getInitialTheme())
+
+  // Show container after theme is applied
+  setTimeout(() => {
+    const container = document.querySelector('#container')
+    if (container) container.classList.remove('opacity-0')
+  }, 100)
+</script>
