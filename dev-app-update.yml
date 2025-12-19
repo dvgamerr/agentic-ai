@@ -1,0 +1,4 @@
+provider: github
+owner: dvgamerr
+repo: agentic-ai
+updaterCacheDirName: agentic-ai-updater
