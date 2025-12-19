@@ -10,10 +10,10 @@
 
 <div id="titlebar" class="select-none">
   <div class="bar flex items-center absolute gap-1 -ml-2 -mt-2 w-full">
-    <button class="menu bg-transparent border-0 w-10 h-full ml-2.5 cursor-pointer hover:bg-white/12" on:click={incrementCount} aria-label="Menu">
-      <div class="api-ico preload-ico idle"></div>
+    <button class="menu bg-transparent border-0 w-10 h-full ml-2.25 cursor-pointer hover:bg-white/12" on:click={incrementCount} aria-label="Menu">
+      <div class="preload-ico idle ml-1.5 mt-0.5"></div>
     </button>
-    <div class="logo flex items-center gap-1 flex-1">
+    <div class="logo flex items-center gap-1 flex-1 mt-2">
       <img src="/logo.png" height="22" width="22" alt="Hades App" />
       <span class="text text-xs font-bold" style="font-family: 'Mulish'">Hades</span>
     </div>
@@ -39,7 +39,6 @@
   }
 
   #titlebar .bar button .preload-ico {
-    margin-right: 1em;
     transform: scale(0.16) translateX(9px) translateY(-35px);
   }
 
