@@ -40,7 +40,7 @@ export const initilizeApp = async () => {
   try {
     await access(configfile)
   } catch {
-    await writeFile(configfile, yaml.stringify({ config, theme: defaultTheme }))
+    await writeFile(configfile, yaml.stringify(defaultTheme))
   }
   return { config, theme: defaultTheme }
 }

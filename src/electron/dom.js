@@ -129,16 +129,21 @@ body.inactive {
 `
 
   return {
-    add() {
+    init() {
       safeDOM.append(document.head, oStyle)
       safeDOM.append(document.body, oDiv)
+    },
+    ready() {
       document.addEventListener('readystatechange', this.remove)
+    },
+    update(msg) {
+      oDiv.querySelector('.payload-msg .text').textContent = msg
     },
     remove() {
       oDiv.classList.add('fade-out')
       setTimeout(() => {
         safeDOM.remove(document.body, oDiv)
-      }, 300)
+      }, 299)
     },
   }
 }

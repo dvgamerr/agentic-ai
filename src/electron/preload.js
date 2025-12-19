@@ -1,10 +1,14 @@
 import { ipcRenderer } from 'electron'
 // import { electronAPI } from '@electron-toolkit/preload'
 import { domReady, createPreloading } from './dom'
+import { sleep } from './lib/helper'
 
-Promise.all([domReady(), ipcRenderer.invoke('INIT-THEME')]).then((res) => {
+Promise.all([domReady(), ipcRenderer.invoke('INIT-THEME')]).then(async (res) => {
   const [, { theme }] = res
-  createPreloading(theme).add()
+  const payload = createPreloading(theme)
+  payload.init()
+  await sleep()
+  payload.remove()
   //   const loading = document.querySelector('#loading .text')
 
   //   // Custom APIs for renderer

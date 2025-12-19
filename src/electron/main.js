@@ -4,6 +4,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import icon from '../../public/favicon.png?asset'
 
+import settings from './lib/settings'
 import { initilizeApp } from './lib/config'
 import ipcEvent from './events'
 import { onWindowPosition } from './events/window'
@@ -21,7 +22,7 @@ if (!app.requestSingleInstanceLock()) {
 
 async function createWindow() {
   const { config, theme } = await initilizeApp()
-  const lasted = {}
+  const lasted = await settings.get('position')
 
   const win = new BrowserWindow({
     title: 'Main window',

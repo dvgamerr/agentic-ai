@@ -16,7 +16,7 @@ const setPosition = (mainWindow) => {
     y: clampedY,
   }
 
-  settings.set(config.maximized ? 'position.maximized' : 'position', config.maximized ? config : config.maximized)
+  settings.set(config.maximized ? 'position.maximized' : 'position', config.maximized ? config.maximized : config)
 }
 
 export const onWindowPosition = (mainWindow) => debounce(() => setPosition(mainWindow), 200)
