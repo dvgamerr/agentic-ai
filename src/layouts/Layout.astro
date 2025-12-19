@@ -3,7 +3,9 @@ import { GoogleFontsOptimizer } from 'astro-google-fonts-optimizer'
 import { ClientRouter } from 'astro:transitions'
 import '../styles/global.css'
 
-const title = 'Ollama Chat'
+import TitleBar from '../components/TitleBar.svelte'
+
+const title = 'Agentic AI'
 const THEME_NAME = 'app:theme'
 ---
 
@@ -13,45 +15,50 @@ const THEME_NAME = 'app:theme'
     <meta charset="UTF-8" />
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <GoogleFontsOptimizer url="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Sarabun:wght@400;700&display=swap" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <GoogleFontsOptimizer url="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Sarabun:wght@400;700&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
   </head>
-  <body class="bg-gray-50 dark:bg-slate-800">
-    <slot />
+  <body class="select-none text-[0.85rem] font-normal grid overflow-hidden h-[calc(100vh-1.2em)]">
+    <TitleBar />
+    <div id="desktop" class="overflow-auto">
+      <slot />
+    </div>
   </body>
 </html>
 
 <script is:inline define:vars={{ THEME_NAME }}>
-  window.applyTheme = (theme) => {
-    if (typeof document === 'undefined' || typeof localStorage === 'undefined') return
-
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-
-    localStorage.setItem(THEME_NAME, theme)
-  }
-
-  window.getInitialTheme = () => {
-    let initialTheme = 'light'
-    if (typeof window !== 'undefined') {
-      initialTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-    if (typeof localStorage !== 'undefined') {
-      initialTheme = localStorage.getItem(THEME_NAME) || initialTheme
-    }
-    return initialTheme
-  }
-
-  window.applyTheme(getInitialTheme())
-
-  // Show container after theme is applied
-  setTimeout(() => {
-    const container = document.querySelector('#container')
-    if (container) container.classList.remove('opacity-0')
-  }, 100)
+  console.log({ THEME_NAME })
 </script>
+<style>
+  body {
+    font-family: 'Open Sans', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--user-text-color);
+    background-color: var(--user-background-color);
+    grid-template-areas:
+      'title'
+      'panel';
+    grid-template-rows: [row1-start] var(--system-titleBar-height);
+  }
+
+  #desktop {
+    grid-area: panel;
+    /* overflow: hidden; */
+    /* flex-direction: row; */
+    /* grid-template-columns: v-bind(resizable) 4px 1fr;
+    justify-items: stretch; */
+    /*
+    .resizer {
+      cursor: col-resize;
+    }
+
+    .resizer:active {
+      background-color: rgb(255 255 255 / 5%);
+    }
+
+    .pane {
+      padding: 10px;
+    } */
+  }
+</style>
