@@ -20,9 +20,18 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0)
 }
 
+function registerIpcHandlers() {
+  for (const eventName in ipcEvent) {
+    ipcMain.handle(eventName, async (e, ...args) => {
+      const result = await ipcEvent[eventName](e, ...args)
+      return result
+    })
+  }
+}
+
 async function createWindow() {
   const { config, theme } = await initilizeApp()
-  const lasted = await settings.get('position')
+  const lasted = (await settings.get('position')) ?? {}
 
   const win = new BrowserWindow({
     title: 'Main window',
@@ -47,22 +56,13 @@ async function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: url.fileURLToPath(new URL('preload.mjs', import.meta.url)),
-      sandbox: false,
-      nodeIntegration: true,
-      contextIsolation: false,
+      sandbox: true,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   })
 
   if (lasted.maximized) win.maximize()
-
-  for (const eventName in ipcEvent) {
-    ipcMain.handle(eventName, async (e, ...args) => {
-      // ipcLog.verbose(eventName, args)
-      const result = await ipcEvent[eventName](e, ...args)
-      // ipcLog.verbose({ eventName, args, result })
-      return result
-    })
-  }
 
   win.on('focus', () => {
     win.setTitleBarOverlay({
@@ -101,6 +101,9 @@ async function createWindow() {
 app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  // Register IPC handlers once at app startup
+  registerIpcHandlers()
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
