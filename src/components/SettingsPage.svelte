@@ -45,7 +45,7 @@
     saving = true
     message = ''
     try {
-      await window.api.settings.set(form)
+      await window.api.settings.set($state.snapshot(form))
       message = 'Saved.'
     } catch (err) {
       message = `Save failed: ${err?.message ?? err}`

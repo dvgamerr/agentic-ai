@@ -8,9 +8,9 @@ export const GOOGLE_TTS_VOICE = 'Despina'
 async function getTtsConfig(options = {}) {
   const stored = (await settings.get('tts')) ?? {}
   return {
-    apiKey: options.apiKey || stored.apiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY,
-    model: options.model || stored.model || process.env.GOOGLE_TTS_MODEL || GOOGLE_TTS_MODEL,
-    voiceName: options.voiceName || stored.voice || process.env.GOOGLE_TTS_VOICE || GOOGLE_TTS_VOICE,
+    apiKey: options.apiKey || stored.apiKey || process.env.GEMINI_API_KEY,
+    model: options.model || stored.model || GOOGLE_TTS_MODEL,
+    voiceName: options.voiceName || stored.voice || GOOGLE_TTS_VOICE,
   }
 }
 

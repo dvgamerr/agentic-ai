@@ -6,7 +6,7 @@ const TTS_STARTUP = `Synthesize speech for the following Thai transcript.
 Tone: soft, cute.
 
 ### TRANSCRIPT
-[fastly] Agentic AI is a ready`
+[fastly] สวัสดีค่ะ วันนี้อยากทำอะไรค่ะ`
 
 function runStartupTts(_event, text = TTS_STARTUP) {
   return generateTtsAudio(text)
