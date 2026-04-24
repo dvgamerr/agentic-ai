@@ -60,6 +60,21 @@ function watchWindowShortcuts(win) {
   })
 }
 
+function syncWindowTheme(win, theme, focused) {
+  const overlay = focused
+    ? {
+        color: theme.titlebar.activeBackground,
+        symbolColor: theme.titlebar.activeForeground,
+      }
+    : {
+        color: theme.titlebar.inactiveBackground,
+        symbolColor: theme.titlebar.inactiveForeground,
+      }
+
+  win.setTitleBarOverlay(overlay)
+  win.webContents.executeJavaScript(`document.body?.classList.toggle('inactive', ${JSON.stringify(!focused)})`).catch(() => {})
+}
+
 async function createWindow() {
   const { config, theme } = await initilizeApp()
   const lasted = (await settings.get('position')) ?? {}
@@ -103,17 +118,10 @@ async function createWindow() {
 
   win.webContents.setMaxListeners(0)
 
-  win.on('focus', () => {
-    win.setTitleBarOverlay({
-      color: theme.titlebar.activeBackground,
-      symbolColor: theme.titlebar.activeForeground,
-    })
-  })
-  win.on('blur', () => {
-    win.setTitleBarOverlay({
-      color: theme.titlebar.inactiveBackground,
-      symbolColor: theme.titlebar.inactiveForeground,
-    })
+  win.on('focus', () => syncWindowTheme(win, theme, true))
+  win.on('blur', () => syncWindowTheme(win, theme, false))
+  win.webContents.on('did-finish-load', () => {
+    syncWindowTheme(win, theme, win.isFocused())
   })
 
   win.on('unmaximize', onWindowPosition(win))

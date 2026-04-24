@@ -55,6 +55,8 @@
 
 - Tailwind v4 with `@theme` block in `src/styles/global.css`. Add design tokens there, not in component files.
 - Layout uses CSS grid areas `title` / `panel`. Title bar height is `--system-titleBar-height`.
+- Dashboard and settings pages share the same shell from `src/layouts/Layout.astro`; page titles should be inline headers (like `Personal AI Stack`), not wrapped in their own card.
+- Settings content should follow the dashboard card language: `rounded-xl`, `border border-border/60`, `bg-card/40`, with consistent `p-4`/`p-5` spacing and even vertical rhythm between labels, inputs, and section headers.
 - Frameless window: drag region requires `-webkit-app-region: drag`; interactive elements need `-webkit-app-region: no-drag`.
 
 ## TTS

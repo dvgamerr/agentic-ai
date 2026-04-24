@@ -14,6 +14,9 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwind()],
+    optimizeDeps: {
+      include: ['bits-ui', '@internationalized/date', 'clsx', 'tailwind-merge', 'tailwind-variants'],
+    },
     resolve: {
       alias: {
         $lib: fileURLToPath(new URL('./src/lib', import.meta.url)),

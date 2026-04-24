@@ -39,18 +39,20 @@ export const createPreloading = (theme) => {
   const className = `preload-ico`
   oStyle.innerHTML = `
 :root {
-  --system-titleBar-height: 2.95em;
+  --system-titleBar-height: 2.65em;
   --user-text-color: ${theme.textColor};
   --user-background-color: ${theme.backgroundColor};
+  --user-titlebar-active-foreground: ${theme.titlebar.activeForeground};
+  --user-titlebar-active-background: ${theme.titlebar.activeBackground};
+  --user-titlebar-inactive-foreground: ${theme.titlebar.inactiveForeground};
+  --user-titlebar-inactive-background: ${theme.titlebar.inactiveBackground};
+  --user-titlebar-foreground: var(--user-titlebar-active-foreground);
+  --user-titlebar-background: var(--user-titlebar-active-background);
 }
 
-body {
-  --user-titlebar-foreground: ${theme.titlebar.activeForeground};
-  --user-titlebar-background: ${theme.titlebar.activeBackground};
-}
 body.inactive {
-  --user-titlebar-foreground: ${theme.titlebar.inactiveForeground};
-  --user-titlebar-background: ${theme.titlebar.inactiveBackground};
+  --user-titlebar-foreground: var(--user-titlebar-inactive-foreground);
+  --user-titlebar-background: var(--user-titlebar-inactive-background);
 }
 
 @keyframes ellipsis {

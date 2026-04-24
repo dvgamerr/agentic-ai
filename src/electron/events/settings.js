@@ -57,10 +57,16 @@ export async function saveAppSettings(_event, payload = {}) {
         color: focused ? activeTheme.titlebar.activeBackground : activeTheme.titlebar.inactiveBackground,
         symbolColor: focused ? activeTheme.titlebar.activeForeground : activeTheme.titlebar.inactiveForeground,
       })
-      const fg = focused ? activeTheme.titlebar.activeForeground : activeTheme.titlebar.inactiveForeground
-      const bg = focused ? activeTheme.titlebar.activeBackground : activeTheme.titlebar.inactiveBackground
       win.webContents
-        .executeJavaScript(`document.documentElement.style.setProperty('--user-titlebar-foreground','${fg}'); document.documentElement.style.setProperty('--user-titlebar-background','${bg}');`)
+        .executeJavaScript(
+          `
+          document.documentElement.style.setProperty('--user-titlebar-active-foreground', ${JSON.stringify(activeTheme.titlebar.activeForeground)})
+          document.documentElement.style.setProperty('--user-titlebar-active-background', ${JSON.stringify(activeTheme.titlebar.activeBackground)})
+          document.documentElement.style.setProperty('--user-titlebar-inactive-foreground', ${JSON.stringify(activeTheme.titlebar.inactiveForeground)})
+          document.documentElement.style.setProperty('--user-titlebar-inactive-background', ${JSON.stringify(activeTheme.titlebar.inactiveBackground)})
+          document.body?.classList.toggle('inactive', ${JSON.stringify(!focused)})
+        `,
+        )
         .catch(() => {})
     }
   }

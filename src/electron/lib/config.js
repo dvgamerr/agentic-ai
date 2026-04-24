@@ -1,4 +1,4 @@
-import { access, mkdir } from 'fs/promises'
+import { access, mkdir, readFile } from 'fs/promises'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
 import electron from 'electron'
@@ -19,6 +19,27 @@ export const defaultTheme = {
 }
 
 export const activeTheme = { ...defaultTheme, titlebar: { ...defaultTheme.titlebar } }
+
+function mergeTheme(base, overrides = {}) {
+  return {
+    ...base,
+    ...overrides,
+    titlebar: {
+      ...base.titlebar,
+      ...(overrides.titlebar ?? {}),
+    },
+  }
+}
+
+async function loadThemeConfig(configFile) {
+  try {
+    const source = await readFile(configFile, 'utf-8')
+    const parsed = yaml.parse(source) ?? {}
+    return mergeTheme(defaultTheme, parsed)
+  } catch {
+    return mergeTheme(defaultTheme)
+  }
+}
 
 const config = {
   config: join(app.getPath('home'), '.hades'),
@@ -46,7 +67,10 @@ export const initilizeApp = async () => {
   } catch {
     await writeFile(configfile, yaml.stringify(defaultTheme))
   }
-  Object.assign(activeTheme, defaultTheme)
-  Object.assign(activeTheme.titlebar, defaultTheme.titlebar)
+
+  const nextTheme = await loadThemeConfig(configfile)
+
+  Object.assign(activeTheme, nextTheme)
+  Object.assign(activeTheme.titlebar, nextTheme.titlebar)
   return { config, theme: activeTheme }
 }
