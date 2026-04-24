@@ -8,6 +8,8 @@
     "dev": "bun x --bun astro dev",
     "serv": "bun ./dist/server/entry.mjs",
     "build:dist": "bun x --bun astro build",
+    "lint:fix": "bun x eslint . --fix",
+    "format:fix": "bun x prettier . --write",
     "test": "bun x lint-staged && bun x commitlint",
     "prepare": "husky",
     "postinstall": "electron-builder install-app-deps",

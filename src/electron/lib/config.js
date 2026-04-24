@@ -16,6 +16,8 @@ export const defaultTheme = {
   },
 }
 
+export const activeTheme = { ...defaultTheme, titlebar: { ...defaultTheme.titlebar } }
+
 const config = {
   config: join(app.getPath('home'), '.hades'),
   width: 1160,
@@ -42,5 +44,7 @@ export const initilizeApp = async () => {
   } catch {
     await writeFile(configfile, yaml.stringify(defaultTheme))
   }
-  return { config, theme: defaultTheme }
+  Object.assign(activeTheme, defaultTheme)
+  Object.assign(activeTheme.titlebar, defaultTheme.titlebar)
+  return { config, theme: activeTheme }
 }

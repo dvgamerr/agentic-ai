@@ -61,22 +61,11 @@ try {
   console.error('[preload] failed to expose api:', err)
 }
 
-Promise.all([
-  domReady(),
-  ipcRenderer.invoke('INIT-THEME'),
-  ipcRenderer.invoke('RUN-STARTUP-TTS').catch((err) => {
-    console.error('[tts] failed:', err)
-    return null
-  }),
-]).then(async (res) => {
-  const [, { theme }, startupAudio] = res
+Promise.all([domReady(), ipcRenderer.invoke('INIT-THEME')]).then(async ([, { theme }]) => {
   const payload = createPreloading(theme)
 
   payload.init()
   await sleep()
-  await playTtsAudio(startupAudio).catch((err) => {
-    console.error('[tts] playback failed:', err)
-  })
   payload.remove()
   console.log({ contextIsolated: process.contextIsolated })
   console.log('init preload.')

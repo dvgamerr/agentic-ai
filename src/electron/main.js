@@ -35,7 +35,7 @@ async function createWindow() {
   const lasted = (await settings.get('position')) ?? {}
 
   const win = new BrowserWindow({
-    title: 'Main window',
+    title: 'Hades AI',
     show: true,
     movable: true,
     resizable: true,
@@ -65,19 +65,19 @@ async function createWindow() {
 
   if (lasted.maximized) win.maximize()
 
+  win.webContents.setMaxListeners(0)
+
   win.on('focus', () => {
     win.setTitleBarOverlay({
       color: theme.titlebar.activeBackground,
       symbolColor: theme.titlebar.activeForeground,
     })
-    win.webContents.executeJavaScript(`document.body.classList.remove('inactive')`)
   })
   win.on('blur', () => {
     win.setTitleBarOverlay({
       color: theme.titlebar.inactiveBackground,
       symbolColor: theme.titlebar.inactiveForeground,
     })
-    win.webContents.executeJavaScript(`document.body.classList.add('inactive')`)
   })
 
   win.on('unmaximize', onWindowPosition(win))

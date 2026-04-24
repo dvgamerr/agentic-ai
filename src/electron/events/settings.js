@@ -1,4 +1,6 @@
+import { BrowserWindow } from 'electron'
 import settings from '../lib/settings'
+import { activeTheme } from '../lib/config'
 import { clearTtsCache, getTtsCacheStats } from '../lib/tts-cache'
 
 const SETTINGS_DEFAULTS = {
@@ -10,6 +12,12 @@ const SETTINGS_DEFAULTS = {
     apiKey: '',
     model: 'gemini-3.1-flash-tts-preview',
     voice: 'Despina',
+  },
+  titlebar: {
+    activeBackground: '#1c1c1f',
+    activeForeground: '#004fe9',
+    inactiveBackground: '#18181a',
+    inactiveForeground: '#8f8f8f',
   },
 }
 
@@ -36,7 +44,26 @@ export async function saveAppSettings(_event, payload = {}) {
   const current = (await settings.get()) ?? {}
   const next = deepMerge(current, payload)
   await settings.set(next)
-  return deepMerge(SETTINGS_DEFAULTS, next)
+  const result = deepMerge(SETTINGS_DEFAULTS, next)
+
+  if (result.titlebar) {
+    Object.assign(activeTheme.titlebar, result.titlebar)
+    const win = BrowserWindow.getAllWindows()[0]
+    if (win && !win.isDestroyed()) {
+      const focused = win.isFocused()
+      win.setTitleBarOverlay({
+        color: focused ? activeTheme.titlebar.activeBackground : activeTheme.titlebar.inactiveBackground,
+        symbolColor: focused ? activeTheme.titlebar.activeForeground : activeTheme.titlebar.inactiveForeground,
+      })
+      const fg = focused ? activeTheme.titlebar.activeForeground : activeTheme.titlebar.inactiveForeground
+      const bg = focused ? activeTheme.titlebar.activeBackground : activeTheme.titlebar.inactiveBackground
+      win.webContents
+        .executeJavaScript(`document.documentElement.style.setProperty('--user-titlebar-foreground','${fg}'); document.documentElement.style.setProperty('--user-titlebar-background','${bg}');`)
+        .catch(() => {})
+    }
+  }
+
+  return result
 }
 
 export async function getCacheStats() {

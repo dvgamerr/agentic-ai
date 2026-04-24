@@ -3,10 +3,7 @@ import { GoogleFontsOptimizer } from 'astro-google-fonts-optimizer'
 import { ClientRouter } from 'astro:transitions'
 import '../styles/global.css'
 
-import TitleBar from '../components/TitleBar.svelte'
-
 const title = 'Agentic AI'
-const THEME_NAME = 'app:theme'
 ---
 
 <!doctype html>
@@ -20,8 +17,38 @@ const THEME_NAME = 'app:theme'
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
   </head>
-  <body class="bg-background text-foreground font-sans text-sm grid overflow-hidden h-[calc(100vh-1.2em)]">
-    <TitleBar client:only="svelte" />
+  <body class="text-foreground font-sans text-sm grid overflow-hidden h-[calc(100vh-1.2em)]">
+    <div id="titlebar" class="select-none">
+      <div class="bar flex items-center gap-1 px-2 w-full">
+        <div class="menu-wrap">
+          <button class="menu-btn" id="menu-trigger" aria-label="Menu" aria-expanded="false" aria-haspopup="true">
+            <div class="preload-ico idle"></div>
+          </button>
+          <div class="menu-popup" id="menu-popup" role="menu">
+            <a href="/" class="menu-item" role="menuitem" data-nav>
+              <span>Home</span>
+            </a>
+            <a href="/settings" class="menu-item" role="menuitem" data-nav>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                ><path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                ></path><circle cx="12" cy="12" r="3"></circle></svg
+              >
+              <span>Settings</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="logo flex items-center gap-1.5 ml-1" style="-webkit-app-region:no-drag">
+          <img src="/logo.png" height="18" width="18" alt="Hades App" />
+          <span class="text-xs font-bold tracking-wide" style="font-family: 'Mulish'">Hades</span>
+        </div>
+
+        <div class="flex-1"></div>
+        <div class="empty w-30.5 shrink-0"></div>
+      </div>
+    </div>
+
     <div id="desktop" class="overflow-auto flex flex-col">
       <div class="flex-1 overflow-auto">
         <slot />
@@ -30,9 +57,37 @@ const THEME_NAME = 'app:theme'
   </body>
 </html>
 
-<script is:inline define:vars={{ THEME_NAME }}>
-  console.log({ THEME_NAME })
+<script>
+  function initMenu() {
+    const trigger = document.getElementById('menu-trigger')
+    const popup = document.getElementById('menu-popup')
+    if (!trigger || !popup) return
+
+    // mark active nav item
+    const path = window.location.pathname
+    popup.querySelectorAll<HTMLElement>('[data-nav]').forEach((el) => {
+      const href = el.getAttribute('href') ?? ''
+      el.toggleAttribute('data-active', href === path || (href !== '/' && path.startsWith(href)))
+    })
+
+    const close = () => {
+      popup.classList.remove('open')
+      trigger.setAttribute('aria-expanded', 'false')
+    }
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const open = popup.classList.toggle('open')
+      trigger.setAttribute('aria-expanded', String(open))
+    })
+
+    document.addEventListener('click', close)
+    document.addEventListener('astro:before-preparation', close)
+  }
+
+  document.addEventListener('astro:page-load', initMenu)
 </script>
+
 <style>
   body {
     user-select: none;
@@ -42,7 +97,108 @@ const THEME_NAME = 'app:theme'
     grid-template-rows: [row1-start] var(--system-titleBar-height);
   }
 
+  #titlebar {
+    grid-area: title;
+  }
+
   #desktop {
     grid-area: panel;
+  }
+
+  #titlebar .bar {
+    -webkit-app-region: drag;
+    height: var(--system-titleBar-height);
+  }
+
+  .menu-wrap {
+    position: relative;
+    -webkit-app-region: no-drag;
+  }
+
+  .menu-btn {
+    -webkit-app-region: no-drag;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: color-mix(in srgb, currentColor 60%, transparent);
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 1.75rem;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  .menu-btn:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    color: inherit;
+  }
+  .menu-btn:active {
+    background: color-mix(in srgb, currentColor 18%, transparent);
+  }
+
+  .menu-btn .preload-ico {
+    transform: scale(0.18);
+  }
+  .menu-btn .idle,
+  .menu-btn .idle::before,
+  .menu-btn .idle::after {
+    animation: none !important;
+  }
+
+  .menu-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 50;
+    min-width: 11rem;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .menu-popup.open {
+    display: block;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: calc(var(--radius) * 0.6);
+    font-size: 0.875rem;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: background 0.1s;
+  }
+
+  .menu-item:hover,
+  .menu-item:focus-visible {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .menu-item[data-active]::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-top: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    margin-left: auto;
+    opacity: 0.6;
   }
 </style>

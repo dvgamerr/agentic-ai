@@ -48,7 +48,7 @@ async function ensureSettingsDir() {
     await mkdir(dirPath, { recursive: true })
   } catch (err) {
     if (err.code !== 'EEXIST') {
-      throw new Error(`Failed to create directory: ${dirPath}`)
+      throw new Error(`Failed to create directory: ${dirPath}`, { cause: err })
     }
   }
 }
