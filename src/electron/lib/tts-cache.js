@@ -1,9 +1,11 @@
 import { createHash } from 'crypto'
 import { mkdir, readFile, writeFile, readdir, unlink, stat } from 'fs/promises'
 import { join } from 'path'
-import { app } from 'electron'
+import electron from 'electron'
 
 export const CACHE_DIR_NAME = 'tts-cache'
+
+const { app } = electron
 
 function getCacheRoot() {
   return join(app.getPath('home'), '.hades', CACHE_DIR_NAME)

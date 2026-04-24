@@ -1,17 +1,19 @@
-appId: com.electron.agentic-ai.app
-productName: agentic-ai
+appId: com.electron.hades-ai.app
+productName: hades-ai
 directories:
   buildResources: build
 files:
   - "!**/.vscode/*"
   - "!src/*"
   - "!electron.vite.config.{js,ts,mjs,cjs}"
-  - "!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}"
+  - "!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-upd\
+    ate.yml,CHANGELOG.md,README.md}"
   - "!{.env,.env.*,.npmrc,pnpm-lock.yaml}"
 asarUnpack:
   - resources/**
 win:
-  executableName: agentic-ai
+  executableName: hades-ai
+  icon: public/favicon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -26,6 +28,7 @@ mac:
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
+  icon: public/favicon.png
   target:
     - AppImage
     - snap
@@ -38,4 +41,4 @@ npmRebuild: false
 publish:
   provider: github
   owner: dvgamerr
-  repo: agentic-ai
+  repo: hades-ai

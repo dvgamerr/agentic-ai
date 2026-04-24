@@ -1,6 +1,6 @@
 {
-  "name": "agentic-ai",
-  "title": "Agentic AI",
+  "name": "hades-ai",
+  "title": "Hades AI",
   "type": "module",
   "version": "0.0.0",
   "main": "dist-electron/main.js",

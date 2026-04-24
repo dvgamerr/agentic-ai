@@ -1,24 +1,32 @@
 import * as url from 'url'
 import { release } from 'os'
-import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
-import icon from '../../public/favicon.png?asset'
+import { existsSync } from 'fs'
+import path from 'path'
+import electron from 'electron'
 
 import settings from './lib/settings'
 import { initilizeApp } from './lib/config'
 import ipcEvent from './events'
 import { onWindowPosition } from './events/window'
 
+const { app, BrowserWindow, shell, ipcMain, nativeImage } = electron
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 // Set application name for Windows 10+ notifications
-if (process.platform === 'win32') app.setAppUserModelId(app.getName())
+if (process.platform === 'win32') app.setAppUserModelId('com.electron.hades-ai.app')
 
 if (!app.requestSingleInstanceLock()) {
   app.quit()
   process.exit(0)
+}
+
+function getPublicAssetPath(fileName) {
+  const candidates = [path.join(process.cwd(), 'public', fileName), path.join(app.getAppPath(), 'public', fileName), path.join(process.resourcesPath, 'public', fileName)]
+
+  return candidates.find((candidate) => existsSync(candidate)) ?? candidates[0]
 }
 
 function registerIpcHandlers() {
@@ -30,9 +38,37 @@ function registerIpcHandlers() {
   }
 }
 
+function watchWindowShortcuts(win) {
+  win.webContents.on('before-input-event', (event, input) => {
+    if (!app.isPackaged && input.type === 'keyDown' && input.code === 'F12') {
+      if (win.webContents.isDevToolsOpened()) {
+        win.webContents.closeDevTools()
+      } else {
+        win.webContents.openDevTools({ mode: 'undocked' })
+      }
+      return
+    }
+
+    if (app.isPackaged && input.type === 'keyDown') {
+      const modifier = input.control || input.meta
+      if (modifier && (input.code === 'KeyR' || input.code === 'Minus')) event.preventDefault()
+      if (modifier && input.shift && input.code === 'Equal') event.preventDefault()
+      if ((input.alt && input.meta) || (input.control && input.shift)) {
+        if (input.code === 'KeyI') event.preventDefault()
+      }
+    }
+  })
+}
+
 async function createWindow() {
   const { config, theme } = await initilizeApp()
   const lasted = (await settings.get('position')) ?? {}
+  const iconPath = getPublicAssetPath('favicon.png')
+  const windowIcon = nativeImage.createFromPath(iconPath)
+
+  if (!app.isPackaged) {
+    console.log({ iconPath, iconLoaded: !windowIcon.isEmpty() })
+  }
 
   const win = new BrowserWindow({
     title: 'Hades AI',
@@ -54,7 +90,7 @@ async function createWindow() {
     height: lasted.height || config.height,
     x: lasted.x,
     y: lasted.y,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform === 'darwin' ? {} : { icon: windowIcon }),
     webPreferences: {
       preload: url.fileURLToPath(new URL('preload.mjs', import.meta.url)),
       sandbox: true,
@@ -100,17 +136,15 @@ async function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.electron.hades-ai.app')
+  }
 
   // Register IPC handlers once at app startup
   registerIpcHandlers()
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+    watchWindowShortcuts(window)
   })
 
   await createWindow()

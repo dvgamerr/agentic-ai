@@ -1,7 +1,9 @@
-import { BrowserWindow } from 'electron'
+import electron from 'electron'
 import settings from '../lib/settings'
 import { activeTheme } from '../lib/config'
 import { clearTtsCache, getTtsCacheStats } from '../lib/tts-cache'
+
+const { BrowserWindow } = electron
 
 const SETTINGS_DEFAULTS = {
   ollama: {

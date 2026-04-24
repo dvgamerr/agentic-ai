@@ -1,6 +1,8 @@
-import { screen } from 'electron'
+import electron from 'electron'
 import settings from '../lib/settings'
 import { debounce } from '../lib/helper'
+
+const { screen } = electron
 
 const setPosition = (mainWindow) => {
   const [winX, winY] = mainWindow.getPosition()

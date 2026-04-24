@@ -1,7 +1,9 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import electron from 'electron'
 // import { electronAPI } from '@electron-toolkit/preload'
 import { domReady, createPreloading } from './dom'
 import { sleep } from './lib/helper'
+
+const { ipcRenderer, contextBridge } = electron
 
 const playingAudio = new Set()
 
@@ -61,12 +63,17 @@ try {
   console.error('[preload] failed to expose api:', err)
 }
 
+console.log(`[${new Date().toTimeString()}][core] Promise run`)
 Promise.all([domReady(), ipcRenderer.invoke('INIT-THEME')]).then(async ([, { theme }]) => {
+  console.log(`[${new Date().toTimeString()}][core] PcreatePreloading`)
   const payload = createPreloading(theme)
 
+  console.log(`[${new Date().toTimeString()}][core] init`)
   payload.init()
+  console.log(`[${new Date().toTimeString()}][core] sleep`)
   await sleep()
+  console.log(`[${new Date().toTimeString()}][core] remove`)
   payload.remove()
   console.log({ contextIsolated: process.contextIsolated })
-  console.log('init preload.')
+  console.log(`[${new Date().toTimeString()}][core] init preload.`)
 })

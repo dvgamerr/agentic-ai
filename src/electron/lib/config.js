@@ -1,9 +1,11 @@
 import { access, mkdir } from 'fs/promises'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
-import { app } from 'electron'
+import electron from 'electron'
 import settings from './settings'
 import yaml from 'yaml'
+
+const { app } = electron
 
 export const defaultTheme = {
   textColor: '#e8e8e8',
